@@ -1,0 +1,29 @@
+# Unity generated files
+8bit/[Ll]ibrary/
+8bit/[Tt]emp/
+8bit/[Oo]bj/
+8bit/[Bb]uild/
+8bit/[Bb]uilds/
+8bit/[Ll]ogs/
+8bit/[Uu]ser[Ss]ettings/
+
+# Visual Studio cache files
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Builds
+*.apk
+*.aab
