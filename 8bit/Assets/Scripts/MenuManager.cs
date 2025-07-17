@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;  // ← Añadir esta línea
+using UnityEngine.SceneManagement;  // ← Añadir para cambiar escenas
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class MenuManager : MonoBehaviour
     public Button connectButton;
     
     [Header("Textos")]
-    public TextMeshProUGUI roomCodeDisplay;  // ← Añadir esta línea
+    public TextMeshProUGUI roomCodeDisplay;
     
     void Start()
     {
@@ -58,12 +59,14 @@ public class MenuManager : MonoBehaviour
     void GenerateRoomCode()
     {
         int code = Random.Range(1000, 9999);
-        roomCodeDisplay.text = code.ToString();  // ← Cambiar esta línea
+        roomCodeDisplay.text = code.ToString();
         Debug.Log("Código generado: " + code);
     }
     
     void ConnectToRoom()
     {
         Debug.Log("Intentando conectar a sala...");
+        // IR A GAMESCREEN
+        SceneManager.LoadScene("GameScene");  // ← Añadir esta línea
     }
 }
