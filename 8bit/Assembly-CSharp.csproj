@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/Gameplay/PlayerSpawn.cs" />
-    <Compile Include="Assets/Scripts/MenaManager.cs" />
     <Compile Include="Assets/Scripts/Mechanics/PlayAudioClip.cs" />
     <Compile Include="Assets/Scripts/Core/Simulation.InstanceRegister.cs" />
     <Compile Include="Assets/Mod Assets/Mod Resources/Scripts/Platformer/PlatformerSpeedPad.cs" />
@@ -88,6 +87,7 @@
     <Compile Include="Assets/Scripts/Core/Simulation.Event.cs" />
     <Compile Include="Assets/Scripts/Mechanics/EnemyController.cs" />
     <Compile Include="Assets/Scripts/Gameplay/PlayerDeath.cs" />
+    <Compile Include="Assets/Scripts/MenuManager.cs" />
     <Compile Include="Assets/Scripts/Mechanics/TokenController.cs" />
     <Compile Include="Assets/Scripts/Mechanics/TokenInstance.cs" />
     <Compile Include="Assets/Scripts/Gameplay/PlayerTokenCollision.cs" />
