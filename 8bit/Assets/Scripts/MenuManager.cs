@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;  // ← Añadir para cambiar escenas
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class MenuManager : MonoBehaviour
@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour
     public Canvas mainMenuCanvas;
     public Canvas createRoomCanvas;
     public Canvas joinRoomCanvas;
+    public Canvas avatarSelectionCanvas;  // ← Añadir esta línea
     
     [Header("Botones Otras Pantallas")]
     public Button backButton1;
@@ -24,8 +25,8 @@ public class MenuManager : MonoBehaviour
     
     void Start()
     {
-        createRoomButton.onClick.AddListener(ShowCreateRoom);
-        joinRoomButton.onClick.AddListener(ShowJoinRoom);
+        createRoomButton.onClick.AddListener(ShowAvatarSelection);  // ← Cambiar aquí
+        joinRoomButton.onClick.AddListener(ShowAvatarSelection);    // ← Cambiar aquí
         backButton1.onClick.AddListener(ShowMainMenu);
         backButton2.onClick.AddListener(ShowMainMenu);
         connectButton.onClick.AddListener(ConnectToRoom);
@@ -38,6 +39,15 @@ public class MenuManager : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(true);
         createRoomCanvas.gameObject.SetActive(false);
         joinRoomCanvas.gameObject.SetActive(false);
+        avatarSelectionCanvas.gameObject.SetActive(false);  // ← Añadir línea
+    }
+    
+    void ShowAvatarSelection()  // ← Nueva función
+    {
+        mainMenuCanvas.gameObject.SetActive(false);
+        createRoomCanvas.gameObject.SetActive(false);
+        joinRoomCanvas.gameObject.SetActive(false);
+        avatarSelectionCanvas.gameObject.SetActive(true);
     }
     
     void ShowCreateRoom()
@@ -45,6 +55,7 @@ public class MenuManager : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(false);
         createRoomCanvas.gameObject.SetActive(true);
         joinRoomCanvas.gameObject.SetActive(false);
+        avatarSelectionCanvas.gameObject.SetActive(false);  // ← Añadir línea
         
         GenerateRoomCode();
     }
@@ -54,6 +65,7 @@ public class MenuManager : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(false);
         createRoomCanvas.gameObject.SetActive(false);
         joinRoomCanvas.gameObject.SetActive(true);
+        avatarSelectionCanvas.gameObject.SetActive(false);  // ← Añadir línea
     }
     
     void GenerateRoomCode()
@@ -66,7 +78,6 @@ public class MenuManager : MonoBehaviour
     void ConnectToRoom()
     {
         Debug.Log("Intentando conectar a sala...");
-        // IR A GAMESCREEN
-        SceneManager.LoadScene("GameScene");  // ← Añadir esta línea
+        SceneManager.LoadScene("GameScene");
     }
 }
