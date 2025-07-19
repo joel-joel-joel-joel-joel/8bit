@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "224675093857",
+    "firebase_url": "https://facebrawl-multiplayer-default-rtdb.firebaseio.com",
+    "project_id": "facebrawl-multiplayer",
+    "storage_bucket": "facebrawl-multiplayer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:224675093857:android:3df065d6eaa9f3c1bff920",
+        "android_client_info": {
+          "package_name": "com.facebrawl.game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHvSk_wdVL7CFNhsti_AHykk5eKKigHsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
