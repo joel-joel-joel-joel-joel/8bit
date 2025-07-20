@@ -261,7 +261,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &42060975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,6 +385,41 @@ MonoBehaviour:
   gameTimer: {fileID: 528841653}
   score: 0
   timeLeft: 60
+  viejitoSprites:
+  - {fileID: 21300000, guid: 8a9532dc856f25442b05073b85a509ab, type: 3}
+  - {fileID: 21300000, guid: 10fb899d00ecc3443983899ce509c355, type: 3}
+  - {fileID: 21300000, guid: 687e23290bf79b54486707fa3248b4d5, type: 3}
+  - {fileID: 21300000, guid: 0f36cfdd1f179b545b39ad4ec9f433fc, type: 3}
+  happySprites:
+  - {fileID: 21300000, guid: 8dd780127720df445be947cb62696d19, type: 3}
+  - {fileID: 21300000, guid: 78bfed43083d6b94890eae757072394c, type: 3}
+  - {fileID: 21300000, guid: 5ffae9fd7e00b78489aed2a58c66c284, type: 3}
+  - {fileID: 21300000, guid: b92a15380a2f524498be5bff926601ff, type: 3}
+  robotSprites:
+  - {fileID: 21300000, guid: 25a505de2fc170c45bd6b074649b00b5, type: 3}
+  - {fileID: 21300000, guid: 3dd1b1ee93764574a8905aa0e5eed89b, type: 3}
+  - {fileID: 21300000, guid: 9b216bcb3540ce74788bf70ccb42820e, type: 3}
+  - {fileID: 21300000, guid: ede23856d1d1b1d4ca244b0296a276e3, type: 3}
+  alienSprites:
+  - {fileID: 21300000, guid: 07c2a74f170941f46b656d7df145d9e7, type: 3}
+  - {fileID: 21300000, guid: 4835034231b97e64b90326c133a58ed3, type: 3}
+  - {fileID: 21300000, guid: 4f53ac6aeb8886e4fba76999354ab405, type: 3}
+  - {fileID: 21300000, guid: 639fbeaffe4e937479d19e0d2b86fe8c, type: 3}
+  gatoSprites:
+  - {fileID: 21300000, guid: afa995bb7fa9d4d4abf3bea23ba1c044, type: 3}
+  - {fileID: 21300000, guid: 5390262f311b0cb48a0ffea81afa12ef, type: 3}
+  - {fileID: 21300000, guid: ecf5d6ca2248de64c9ca94e5882f84df, type: 3}
+  - {fileID: 21300000, guid: 66ba93f84f3804b42976b39b83716989, type: 3}
+  demonioSprites:
+  - {fileID: 21300000, guid: 57cd7f3e670f4f14986db80808c99a1c, type: 3}
+  - {fileID: 21300000, guid: 6e5b3d391fd7d464f998b257c2350102, type: 3}
+  - {fileID: 21300000, guid: 5ad0f90bf31abb246a51bd7116b5245f, type: 3}
+  - {fileID: 21300000, guid: 9b272c20f68830d4ca4e9ce983c5fc25, type: 3}
+  diabloSprites:
+  - {fileID: 21300000, guid: c513502f2f6e61e458c56de775369908, type: 3}
+  - {fileID: 21300000, guid: 06f925bbcfb9e1e4abc06b487fd7f4c0, type: 3}
+  - {fileID: 21300000, guid: dbb0b167d2aa0624c9fbc22fabff1ba3, type: 3}
+  - {fileID: 21300000, guid: fe993610c91d4204e82da48db39da5a0, type: 3}
 --- !u!4 &108293884
 Transform:
   m_ObjectHideFlags: 0
@@ -450,7 +485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2981131, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

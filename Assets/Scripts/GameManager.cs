@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("UI Elements")]
     public Button backToMenuButton;                 // Botón volver al menú
-    public Image opponentAvatar;                    // Avatar del oponente (imagen roja)
+    public Image opponentAvatar;                    // Avatar del oponente (imagen)
     public TextMeshProUGUI opponentAvatarText;      // Nombre del avatar enemigo
     public TextMeshProUGUI playerScore;             // Score del jugador
     public TextMeshProUGUI gameTimer;               // Timer del juego
@@ -18,6 +18,15 @@ public class GameManager : MonoBehaviour
     public int score = 0;                           // Puntuación actual
     public float timeLeft = 60f;                    // Tiempo restante
     
+    [Header("Avatar Sprites")]
+    public Sprite[] viejitoSprites = new Sprite[4];    // Fase 1-4
+    public Sprite[] happySprites = new Sprite[4];
+    public Sprite[] robotSprites = new Sprite[4];
+    public Sprite[] alienSprites = new Sprite[4];
+    public Sprite[] gatoSprites = new Sprite[4];
+    public Sprite[] demonioSprites = new Sprite[4];
+    public Sprite[] diabloSprites = new Sprite[4];
+    
     // Variables privadas
     private string selectedAvatar = "HAPPY";        // Avatar del jugador actual
     private string opponentAvatarName = "ROBOT";    // Avatar del enemigo
@@ -25,10 +34,25 @@ public class GameManager : MonoBehaviour
     private bool needsOpponentUpdate = false;       // Flag para main thread update
     private string pendingOpponentAvatar = "";      // Avatar enemigo pendiente
     
+    // Variables para damage system
+    private int currentDamagePhase = 0;             // 0=perfect, 1=bruised, 2=battered, 3=destroyed
+    private int hitCount = 0;                       // Número total de golpes
+    private Dictionary<string, Sprite[]> avatarSpritesMap;  // Mapping de avatares a sprites
+    
     void Start()
     {
+        PlayerPrefs.DeleteAll();
+        Debug.Log("PlayerPrefs limpiados!");
+
+        if (!IsValidAvatar(PlayerPrefs.GetString("SelectedAvatar", "HAPPY")))
+        {
+            PlayerPrefs.SetString("SelectedAvatar", "HAPPY");
+        }
         // Configurar botón de navegación
         backToMenuButton.onClick.AddListener(BackToMenu);
+        
+        // Setup avatar sprites mapping
+        SetupAvatarSprites();
         
         // Cargar avatar seleccionado y enemigo
         LoadSelectedAvatar();
@@ -43,6 +67,8 @@ public class GameManager : MonoBehaviour
         
         Debug.Log("GameManager iniciado correctamente");
     }
+    
+
     
     void Update()
     {
@@ -68,6 +94,23 @@ public class GameManager : MonoBehaviour
             DisplayOpponentAvatar();
             Debug.Log("Avatar enemigo actualizado desde main thread: " + opponentAvatarName);
         }
+    }
+    
+    // Setup mapping de avatares a sprites
+    void SetupAvatarSprites()
+    {
+        avatarSpritesMap = new Dictionary<string, Sprite[]>
+        {
+            ["VIEJITO"] = viejitoSprites,
+            ["HAPPY"] = happySprites,
+            ["ROBOT"] = robotSprites,
+            ["ALIEN"] = alienSprites,
+            ["GATO"] = gatoSprites,
+            ["DEMONIO"] = demonioSprites,
+            ["DIABLO"] = diabloSprites
+        };
+        
+        Debug.Log("Avatar sprites mapping configurado");
     }
     
     // Cargar avatar del jugador y determinar enemigo
@@ -99,9 +142,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Modo single player - auto-golpeo");
-            // Solo jugador: golpear tu propio avatar
-            opponentAvatarName = selectedAvatar;
+            Debug.Log("Modo single player - avatar aleatorio");
+            // Solo jugador: avatar aleatorio
+            opponentAvatarName = GetRandomOpponentAvatar();
             DisplayOpponentAvatar();
         }
     }
@@ -149,7 +192,7 @@ public class GameManager : MonoBehaviour
     // Generar avatar aleatorio para enemigo (fallback)
     string GetRandomOpponentAvatar()
     {
-        string[] avatars = {"HAPPY", "ROBOT", "ALIEN", "TARGET", "FIRE", "STAR"};
+        string[] avatars = {"VIEJITO", "HAPPY", "ROBOT", "ALIEN", "GATO", "DEMONIO", "DIABLO"};
         
         // Asegurar que enemigo tenga avatar diferente al jugador
         string opponentAvatar;
@@ -167,11 +210,25 @@ public class GameManager : MonoBehaviour
         if (opponentAvatarText != null)
         {
             opponentAvatarText.text = opponentAvatarName;
-            Debug.Log("Avatar enemigo mostrado en UI: " + opponentAvatarName);
+        }
+        
+        // NUEVO: Cambiar sprite según damage phase
+        if (opponentAvatar != null && avatarSpritesMap.ContainsKey(opponentAvatarName))
+        {
+            Sprite[] sprites = avatarSpritesMap[opponentAvatarName];
+            if (sprites.Length > currentDamagePhase && sprites[currentDamagePhase] != null)
+            {
+                opponentAvatar.sprite = sprites[currentDamagePhase];
+                Debug.Log("Avatar sprite cambiado: " + opponentAvatarName + " fase " + currentDamagePhase);
+            }
+            else
+            {
+                Debug.LogError("Sprite no encontrado para " + opponentAvatarName + " fase " + currentDamagePhase);
+            }
         }
         else
         {
-            Debug.LogError("OpponentAvatarText no está asignado!");
+            Debug.LogError("Avatar " + opponentAvatarName + " no encontrado en sprites mapping");
         }
     }
     
@@ -181,19 +238,39 @@ public class GameManager : MonoBehaviour
         if (timeLeft > 0 && !gameEnded)
         {
             score++;
-            Debug.Log("¡Golpe a " + opponentAvatarName + "! Score: " + score);
+            hitCount++;
+            
+            // Calcular damage phase basado en hits
+            int newDamagePhase = CalculateDamagePhase(hitCount);
+            
+            if (newDamagePhase != currentDamagePhase)
+            {
+                currentDamagePhase = newDamagePhase;
+                DisplayOpponentAvatar();  // Actualizar sprite
+                Debug.Log("¡DAMAGE PHASE CHANGE! Fase: " + currentDamagePhase);
+            }
+            
+            Debug.Log("¡Golpe a " + opponentAvatarName + "! Hits: " + hitCount + ", Score: " + score + ", Fase: " + currentDamagePhase);
             
             // Sincronizar score con Firebase multijugador
             if (MultiplayerManager.Instance != null)
             {
                 MultiplayerManager.Instance.SendHit(score);
-                Debug.Log("Score enviado a Firebase: " + score);
             }
             
             // Efecto visual de golpe
             StartCoroutine(HitEffect());
             UpdateUI();
         }
+    }
+    
+    // NUEVA FUNCIÓN: Calcular fase de damage
+    int CalculateDamagePhase(int hits)
+    {
+        if (hits <= 5) return 0;        // Perfect (0-5 golpes)
+        else if (hits <= 15) return 1; // Bruised (6-15 golpes)
+        else if (hits <= 25) return 2; // Battered (16-25 golpes)
+        else return 3;                  // Destroyed (26+ golpes)
     }
     
     // Efecto visual cuando golpeas
@@ -242,22 +319,27 @@ public class GameManager : MonoBehaviour
     {
         timeLeft = 60f;
         gameEnded = false;
+        
+        // Reset damage system
+        currentDamagePhase = 0;
+        hitCount = 0;
     }
     
     // Terminar juego - llamado cuando timer llega a 0
     void EndGame()
     {
-        Debug.Log("¡GAME OVER! Score final: " + score);
+        Debug.Log("¡GAME OVER! Score final: " + score + ", Hits totales: " + hitCount + ", Damage final: " + currentDamagePhase);
         
         // Guardar score para Results screen
         PlayerPrefs.SetInt("FinalScore", score);
+        PlayerPrefs.SetInt("FinalHits", hitCount);
+        PlayerPrefs.SetInt("FinalDamage", currentDamagePhase);
         PlayerPrefs.Save();
         
         // Actualizar estado en Firebase
         if (MultiplayerManager.Instance != null)
         {
             MultiplayerManager.Instance.SendHit(score); // Score final
-            // TODO: Implementar winner calculation
         }
         
         // Mostrar Results screen
@@ -308,4 +390,12 @@ public class GameManager : MonoBehaviour
         Debug.Log("Regresando al menú principal...");
         SceneManager.LoadScene("MainMenu");
     }
+
+    bool IsValidAvatar(string avatar)
+    {
+        string[] validAvatars = {"VIEJITO", "HAPPY", "ROBOT", "ALIEN", "GATO", "DEMONIO", "DIABLO"};
+        return System.Array.Exists(validAvatars, x => x == avatar);
+    }
+
+
 }
