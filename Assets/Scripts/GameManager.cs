@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        PlayerPrefs.DeleteAll();
-        Debug.Log("PlayerPrefs limpiados!");
+        //PlayerPrefs.DeleteAll();
+        //Debug.Log("PlayerPrefs limpiados!");
 
         if (!IsValidAvatar(PlayerPrefs.GetString("SelectedAvatar", "HAPPY")))
         {
@@ -189,20 +189,30 @@ public class GameManager : MonoBehaviour
         });
     }
     
-    // Generar avatar aleatorio para enemigo (fallback)
-    string GetRandomOpponentAvatar()
+    // ✅ ACTUALIZADO: Generar avatar enemigo (mismo avatar para Training)
+string GetRandomOpponentAvatar()
+{
+    // ✅ NUEVO: Para Training mode, usar mismo avatar
+    string lastAction = PlayerPrefs.GetString("LastMenuAction", "");
+    
+    if (lastAction == "Training")
     {
-        string[] avatars = {"VIEJITO", "HAPPY", "ROBOT", "ALIEN", "GATO", "DEMONIO", "DIABLO"};
-        
-        // Asegurar que enemigo tenga avatar diferente al jugador
-        string opponentAvatar;
-        do {
-            opponentAvatar = avatars[Random.Range(0, avatars.Length)];
-        } while (opponentAvatar == selectedAvatar);
-        
-        Debug.Log("Avatar enemigo aleatorio generado: " + opponentAvatar);
-        return opponentAvatar;
+        Debug.Log("Training mode: usando mismo avatar - " + selectedAvatar);
+        return selectedAvatar; // Tu mismo avatar
     }
+    
+    // Para otros modos: avatar diferente aleatorio
+    string[] avatars = {"VIEJITO", "HAPPY", "ROBOT", "ALIEN", "GATO", "DEMONIO", "DIABLO"};
+    
+    // Asegurar que enemigo tenga avatar diferente al jugador
+    string opponentAvatar;
+    do {
+        opponentAvatar = avatars[Random.Range(0, avatars.Length)];
+    } while (opponentAvatar == selectedAvatar);
+    
+    Debug.Log("Avatar enemigo aleatorio generado: " + opponentAvatar);
+    return opponentAvatar;
+}
     
     // Mostrar avatar del enemigo en UI
     void DisplayOpponentAvatar()

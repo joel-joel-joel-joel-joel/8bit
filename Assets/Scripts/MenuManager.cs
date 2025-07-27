@@ -6,8 +6,9 @@ using TMPro;
 public class MenuManager : MonoBehaviour
 {
     [Header("Botones Menú Principal")]
-    public Button createRoomButton;
-    public Button joinRoomButton;
+    public Button createRoomButton;      // Ahora será "JUGAR CON AMIGOS" 
+    public Button joinRoomButton;        // Ahora será "PELEA RÁPIDA"
+    public Button trainingButton;        // ✅ NUEVO: "ENTRENAMIENTO"
     
     [Header("Canvas")]
     public Canvas mainMenuCanvas;
@@ -26,11 +27,15 @@ public class MenuManager : MonoBehaviour
     
     void Start()
     {
-        // Configurar botones principales
-        createRoomButton.onClick.AddListener(ShowAvatarSelectionFromCreate);
-        joinRoomButton.onClick.AddListener(ShowAvatarSelectionFromJoin);
+        // ✅ NUEVO FLOW: INVERTIDO LA LÓGICA
+        // joinRoomButton → PELEA RÁPIDA (auto-matchmaking)
+        // createRoomButton → JUGAR CON AMIGOS (crear sala + código)
         
-        // Configurar botones de navegación
+        createRoomButton.onClick.AddListener(StartQuickMatch);       // "PELEA RÁPIDA" (arriba)
+        joinRoomButton.onClick.AddListener(StartPlayWithFriends);
+        trainingButton.onClick.AddListener(StartTraining);  
+        
+        // Configurar botones de navegación (sin cambios)
         backButton1.onClick.AddListener(ShowMainMenu);
         backButton2.onClick.AddListener(ShowMainMenu);
         connectButton.onClick.AddListener(ConnectToRoom);
@@ -38,6 +43,28 @@ public class MenuManager : MonoBehaviour
         
         // Mostrar menú principal al iniciar
         ShowMainMenu();
+    }
+    
+    // ✅ NUEVA FUNCIÓN: PELEA RÁPIDA (auto-matchmaking)
+    void StartQuickMatch()
+    {
+        Debug.Log("=== PELEA RÁPIDA INICIADA ===");
+        
+        // Guardar modo para avatar selection
+        PlayerPrefs.SetString("LastMenuAction", "QuickMatch"); // En lugar de "PlayWithFriends"
+        ShowAvatarSelection();
+
+    }
+    
+    // ✅ NUEVA FUNCIÓN: JUGAR CON AMIGOS (crear sala con código)  
+    void StartPlayWithFriends()
+    {
+        Debug.Log("=== JUGAR CON AMIGOS INICIADO ===");
+        
+        // Guardar modo para avatar selection
+        PlayerPrefs.SetString("LastMenuAction", "PlayWithFriends"); // En lugar de "QuickMatch"
+        ShowAvatarSelection();
+        
     }
     
     // Mostrar menú principal
@@ -49,19 +76,9 @@ public class MenuManager : MonoBehaviour
         avatarSelectionCanvas.gameObject.SetActive(false);
     }
     
-    // Ir a avatar selection desde CREAR SALA
-    void ShowAvatarSelectionFromCreate()
-    {
-        PlayerPrefs.SetString("LastMenuAction", "CreateRoom");
-        ShowAvatarSelection();
-    }
-    
-    // Ir a avatar selection desde UNIRSE A SALA
-    void ShowAvatarSelectionFromJoin()
-    {
-        PlayerPrefs.SetString("LastMenuAction", "JoinRoom");
-        ShowAvatarSelection();
-    }
+    // ❌ DEPRECATED: Ya no usamos estas funciones
+    // void ShowAvatarSelectionFromCreate() - REMOVED
+    // void ShowAvatarSelectionFromJoin() - REMOVED
     
     // Mostrar pantalla de selección de avatar
     void ShowAvatarSelection()
@@ -72,7 +89,7 @@ public class MenuManager : MonoBehaviour
         avatarSelectionCanvas.gameObject.SetActive(true);
     }
     
-    // Mostrar pantalla crear sala
+    // Mostrar pantalla crear sala (para JUGAR CON AMIGOS)
     void ShowCreateRoom()
     {
         mainMenuCanvas.gameObject.SetActive(false);
@@ -84,7 +101,7 @@ public class MenuManager : MonoBehaviour
         GenerateRoomCode();
     }
     
-    // Mostrar pantalla unirse a sala
+    // ❌ DEPRECATED: Ya no necesitamos join room screen para quick match
     void ShowJoinRoom()
     {
         mainMenuCanvas.gameObject.SetActive(false);
@@ -93,10 +110,10 @@ public class MenuManager : MonoBehaviour
         avatarSelectionCanvas.gameObject.SetActive(false);
     }
     
-    // Generar código de sala - INTEGRADO CON MULTIPLAYER
+    // Generar código de sala - SOLO para JUGAR CON AMIGOS
     void GenerateRoomCode()
     {
-        Debug.Log("GenerateRoomCode() llamado");
+        Debug.Log("GenerateRoomCode() llamado para JUGAR CON AMIGOS");
         
         if (MultiplayerManager.Instance != null)
         {
@@ -112,10 +129,10 @@ public class MenuManager : MonoBehaviour
         }
     }
     
-    // Conectar a sala - INTEGRADO CON MULTIPLAYER
+    // ❌ DEPRECATED: Ya no necesitamos connect para quick match
     void ConnectToRoom()
     {
-        Debug.Log("ConnectToRoom() llamado");
+        Debug.Log("ConnectToRoom() llamado - DEPRECATED en nuevo flow");
         
         // Obtener código del input field
         string roomCode = GetRoomCodeFromInput();
@@ -133,10 +150,9 @@ public class MenuManager : MonoBehaviour
         }
     }
     
-    // Obtener código del input field en JoinRoom
+    // Obtener código del input field en JoinRoom (para backward compatibility)
     string GetRoomCodeFromInput()
     {
-        // Buscar input field en JoinRoom canvas
         var inputField = GameObject.Find("RoomCodeInput")?.GetComponent<TMPro.TMP_InputField>();
         
         if (inputField != null)
@@ -148,14 +164,37 @@ public class MenuManager : MonoBehaviour
         return "1234"; // Fallback para testing
     }
     
-    // Empezar juego desde CreateRoom
+    // Empezar juego desde CreateRoom (JUGAR CON AMIGOS)
+    // ✅ ACTUALIZAR: Empezar juego - Solo para JUGAR CON AMIGOS
     void StartGame()
     {
-        Debug.Log("StartGame() llamado desde CreateRoom");
+        string lastAction = PlayerPrefs.GetString("LastMenuAction", "");
+    
+        if (lastAction == "QuickMatch")
+        {
+            Debug.Log("PELEA RÁPIDA - No puede empezar sin oponente");
+            // No hacer nada, debe esperar oponente
+            return;
+        }
+    
+        Debug.Log("StartGame() llamado desde JUGAR CON AMIGOS");
         SceneManager.LoadScene("GameScene");
     }
+
+
+    // ✅ NUEVA FUNCIÓN: Iniciar entrenamiento
+    void StartTraining()
+    {
+        Debug.Log("=== ENTRENAMIENTO INICIADO ===");
     
-    // FUNCIONES PÚBLICAS para AvatarSelector
+        // Guardar modo para avatar selection
+        PlayerPrefs.SetString("LastMenuAction", "Training");
+    
+        // Ir directo a avatar selection
+        ShowAvatarSelection();
+    }     
+    
+    // FUNCIONES PÚBLICAS para AvatarSelector (actualizadas)
     public void ShowCreateRoomPublic()
     {
         ShowCreateRoom();

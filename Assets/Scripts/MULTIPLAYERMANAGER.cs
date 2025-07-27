@@ -333,4 +333,201 @@ public class MultiplayerManager : MonoBehaviour
     {
         LeaveRoom();
     }
+
+    // ✅ NUEVA FUNCIÓN: Auto-matchmaking para PELEA RÁPIDA
+public void StartQuickMatch()
+{
+    Debug.Log("=== START QUICK MATCH INICIADO ===");
+    
+    string selectedAvatar = PlayerPrefs.GetString("SelectedAvatar", "HAPPY");
+    Debug.Log("Avatar para quick match: " + selectedAvatar);
+    
+    // Buscar salas disponibles para unirse
+    SearchAvailableRooms(selectedAvatar);
+}
+
+// ✅ NUEVA FUNCIÓN: Buscar salas disponibles
+// ✅ ACTUALIZADO: Buscar salas disponibles (excluir salas propias)
+private void SearchAvailableRooms(string selectedAvatar)
+{
+    Debug.Log("Buscando salas disponibles...");
+    
+    database.Child("rooms").OrderByChild("status").EqualTo("waiting").GetValueAsync().ContinueWith(task =>
+    {
+        if (task.IsCompleted && task.Result.Exists)
+        {
+            Debug.Log("=== SALAS DISPONIBLES ENCONTRADAS ===");
+            
+            var rooms = task.Result.Value as Dictionary<string, object>;
+            
+            // Buscar primera sala disponible QUE NO SEA NUESTRA
+            foreach (var room in rooms)
+            {
+                string roomId = room.Key;
+                var roomData = room.Value as Dictionary<string, object>;
+                
+                string guest = roomData.ContainsKey("guest") ? roomData["guest"].ToString() : "";
+                string host = roomData.ContainsKey("host") ? roomData["host"].ToString() : "";
+                
+                Debug.Log("Sala encontrada: " + roomId + " - Host: " + host + " - Guest: '" + guest + "'");
+                
+                // ✅ NUEVO: Verificar que NO sea nuestra sala
+                bool isOurRoom = (host == playerId);
+                
+                // Si la sala no tiene guest Y no es nuestra sala, unirse
+                if (string.IsNullOrEmpty(guest) && !isOurRoom)
+                {
+                    Debug.Log("✅ Sala de otro jugador encontrada: " + roomId);
+                    JoinFoundRoom(roomId, selectedAvatar);
+                    return; // Salir del bucle
+                }
+                else if (isOurRoom)
+                {
+                    Debug.Log("⚠️ Saltando sala propia: " + roomId);
+                }
+                else
+                {
+                    Debug.Log("⚠️ Sala ocupada: " + roomId);
+                }
+            }
+            
+            // Si llegamos aquí, no encontramos salas de otros jugadores
+            Debug.Log("❌ No se encontraron salas de otros jugadores disponibles");
+            CreateNewRoomForQuickMatch(selectedAvatar);
+        }
+        else
+        {
+            Debug.Log("❌ No hay salas con status 'waiting'");
+            CreateNewRoomForQuickMatch(selectedAvatar);
+        }
+    });
+}
+
+// ✅ NUEVA FUNCIÓN: Unirse a sala encontrada
+private void JoinFoundRoom(string roomId, string selectedAvatar)
+{
+    Debug.Log("=== UNIÉNDOSE A SALA ENCONTRADA ===");
+    Debug.Log("Room ID: " + roomId);
+    Debug.Log("Avatar: " + selectedAvatar);
+    
+    currentRoomId = roomId;
+    isHost = false;
+    
+    var updates = new Dictionary<string, object>
+    {
+        ["guest"] = playerId,
+        ["guestAvatar"] = selectedAvatar,
+        ["status"] = "playing"
+    };
+    
+    database.Child("rooms").Child(roomId).UpdateChildrenAsync(updates).ContinueWith(task =>
+    {
+        if (task.IsCompleted && !task.IsFaulted)
+        {
+            Debug.Log("🎮 Quick match exitoso - Unido a sala: " + roomId);
+            StartMultiplayerGame();
+        }
+        else
+        {
+            Debug.LogError("Error uniéndose a sala quick match: " + task.Exception);
+            CreateNewRoomForQuickMatch(selectedAvatar);
+        }
+    });
+}
+
+// ✅ NUEVA FUNCIÓN: Crear sala nueva para quick match
+private void CreateNewRoomForQuickMatch(string selectedAvatar)
+{
+    Debug.Log("=== CREANDO NUEVA SALA PARA QUICK MATCH ===");
+    Debug.Log("CHECKPOINT 1: Función iniciada");
+    string newRoomId = System.DateTime.Now.Ticks.ToString().Substring(10);
+    Debug.Log("CHECKPOINT 2: Room ID generado: " + newRoomId);
+    isHost = true;
+    Debug.Log("CHECKPOINT 3: isHost = true");
+    
+    Debug.Log("Código generado para quick match: " + newRoomId);
+    Debug.Log("CHECKPOINT 4: Preparando roomData");
+
+    var roomData = new Dictionary<string, object>
+    {
+        ["host"] = playerId,
+        ["hostAvatar"] = selectedAvatar,
+        ["guest"] = "",
+        ["guestAvatar"] = "",
+        ["status"] = "waiting", // ← IMPORTANTE: waiting para que otros puedan unirse
+        ["gameAvatar"] = selectedAvatar,
+        ["hostScore"] = 0,
+        ["guestScore"] = 0,
+        ["lastUpdate"] = ServerValue.Timestamp
+    };
+
+    Debug.Log("CHECKPOINT 5: roomData creado"); // ← AÑADIR
+    
+    database.Child("rooms").Child(newRoomId).SetValueAsync(roomData).ContinueWith(task =>
+    {
+        if (task.IsCompleted && !task.IsFaulted)
+        {
+            Debug.Log("✅ Sala quick match creada: " + newRoomId);
+            
+            currentRoomId = newRoomId;
+            
+            // Esperar a que alguien se una
+            StartWaitingForOpponent();
+        }
+        else
+        {
+            Debug.LogError("❌ Error creando sala quick match: " + task.Exception);
+            // Fallback: ir directo a GameScene solo
+            needsSceneChange = true;
+        }
+    });
+}
+
+// ✅ NUEVA FUNCIÓN: Esperar oponente para quick match
+private void StartWaitingForOpponent()
+{
+    Debug.Log("=== ESPERANDO OPONENTE PARA QUICK MATCH ===");
+    
+    // Escuchar cambios en la sala para detectar cuando se una alguien
+    database.Child("rooms").Child(currentRoomId).ValueChanged += OnQuickMatchRoomChanged;
+    
+    Debug.Log("Listening for opponent in room: " + currentRoomId);
+}
+
+// ✅ NUEVA FUNCIÓN: Listener para cambios en sala quick match
+private void OnQuickMatchRoomChanged(object sender, ValueChangedEventArgs args)
+{
+    if (args.DatabaseError != null)
+    {
+        Debug.LogError("Error en quick match listener: " + args.DatabaseError.Message);
+        return;
+    }
+    
+    var roomData = args.Snapshot.Value as Dictionary<string, object>;
+    if (roomData != null)
+    {
+        string status = roomData.ContainsKey("status") ? roomData["status"].ToString() : "";
+        string guest = roomData.ContainsKey("guest") ? roomData["guest"].ToString() : "";
+        
+        Debug.Log("Quick match room update - Status: " + status + ", Guest: '" + guest + "'");
+        
+        // Si cambió a playing y hay guest, empezar juego
+        if (status == "playing" && !string.IsNullOrEmpty(guest))
+        {
+            Debug.Log("🎮 Oponente encontrado! Iniciando juego...");
+            
+            // Dejar de escuchar
+            database.Child("rooms").Child(currentRoomId).ValueChanged -= OnQuickMatchRoomChanged;
+            
+            // Iniciar juego
+            StartMultiplayerGame();
+        }
+    }
+}
+
+
+
+
+
+
 }

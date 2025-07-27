@@ -16,12 +16,12 @@ public class AvatarSelector : MonoBehaviour
     [Header("Avatar Data")]
     public string[] avatarEmojis = {"ALIEN", "DEMONIO", "DIABLO", "GATO", "HAPPY", "ROBOT"};
     public string[] avatarDescriptions = {
-        "Alienígena espacial",       // ALIEN
-        "Demonio travieso",          // DEMONIO  
-        "Diablo intimidante",        // DIABLO
-        "Gato adorable",             // GATO
-        "Cara feliz clásica",        // HAPPY
-        "Robot futurista"            // ROBOT
+        "Alieeeen otro planetaaaa!",     // ALIEN
+        "Demonio travieso",              // DEMONIO  
+        "Diablo intimidante",            // DIABLO
+        "Gato adorable",                 // GATO
+        "Cara feliz clásica",            // HAPPY
+        "Robot futurista"                // ROBOT
     };
     
     [Header("Navigation")]
@@ -156,7 +156,7 @@ public class AvatarSelector : MonoBehaviour
         }
     }
     
-    // Confirmar selección de avatar
+    // ✅ ACTUALIZADO: Confirmar selección de avatar con nuevo flow
     void ConfirmSelection()
     {
         // Guardar avatar seleccionado en PlayerPrefs
@@ -165,22 +165,125 @@ public class AvatarSelector : MonoBehaviour
         
         Debug.Log("Avatar confirmado: " + selectedAvatar);
         
-        // Ir a la pantalla correcta según el flujo
+        // ✅ NUEVO FLOW: Manejar diferentes modos
         string lastAction = PlayerPrefs.GetString("LastMenuAction", "");
         
-        if (lastAction == "CreateRoom")
+        if (lastAction == "QuickMatch")
         {
-            Debug.Log("Mostrando CreateRoom...");
+            Debug.Log("Modo PELEA RÁPIDA - Iniciando auto-matchmaking...");
+            StartQuickMatchmaking();
+        }
+        else if (lastAction == "PlayWithFriends")
+        {
+            Debug.Log("Modo JUGAR CON AMIGOS - Creando sala...");
             ShowCreateRoom();
+        }
+
+        else if (lastAction == "Training")
+        {
+            Debug.Log("Modo ENTRENAMIENTO - Iniciando single player...");
+            StartTrainingMode();
+        }
+
+
+        // ✅ BACKWARD COMPATIBILITY: Mantener flow anterior por si acaso
+        else if (lastAction == "CreateRoom")
+        {
+            Debug.Log("Modo legacy CreateRoom...");
+            ShowCreateRoom();
+        }
+        else if (lastAction == "JoinRoom")
+        {
+            Debug.Log("Modo legacy JoinRoom...");
+            ShowJoinRoom();
         }
         else
         {
-            Debug.Log("Mostrando JoinRoom...");
-            ShowJoinRoom();
+            Debug.LogWarning("Modo desconocido: " + lastAction + " - Fallback a CreateRoom");
+            ShowCreateRoom();
+        }
+    }
+
+    void StartTrainingMode()
+    {
+        Debug.Log("=== TRAINING MODE INICIADO ===");
+    
+    // Ir directo a GameScene en single player mode
+        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+    }
+
+   
+    // ✅ NUEVA FUNCIÓN: Auto-matchmaking para PELEA RÁPIDA
+    void StartQuickMatchmaking()
+    {
+        Debug.Log("=== QUICK MATCHMAKING INICIADO ===");
+        
+        if (MultiplayerManager.Instance != null)
+        {
+            ShowWaitingScreen();
+            // Llamar función de auto-matchmaking en MultiplayerManager
+            MultiplayerManager.Instance.StartQuickMatch();
+        }
+        else
+        {
+            Debug.LogError("MultiplayerManager no encontrado para quick match!");
+            // Fallback: ir directo a GameScene
+            UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
         }
     }
     
-    // Mostrar pantalla Crear Sala
+    void ShowWaitingScreen()
+{
+    Debug.Log("ShowWaitingScreen llamado");
+    
+    if (createRoomCanvas != null)
+    {
+        mainMenuCanvas.gameObject.SetActive(false);
+        createRoomCanvas.gameObject.SetActive(true);
+        joinRoomCanvas.gameObject.SetActive(false);
+        avatarSelectionCanvas.gameObject.SetActive(false);
+        Debug.Log("Waiting screen activado");
+        
+        // ✅ NUEVO: Cambiar UI según modo
+        string lastAction = PlayerPrefs.GetString("LastMenuAction", "");
+        
+        if (lastAction == "QuickMatch")
+        {
+            // Para PELEA RÁPIDA: Ocultar código, mostrar "ESPERANDO..."
+            UpdateUIForQuickMatch();
+        }
+        // Para JUGAR CON AMIGOS: Mantener UI normal con código
+    }
+    else
+    {
+        Debug.LogError("CreateRoomCanvas es NULL!");
+    }
+}
+
+// ✅ NUEVA FUNCIÓN: UI para PELEA RÁPIDA
+void UpdateUIForQuickMatch()
+{
+    // Encontrar elementos de UI y cambiar textos
+    var roomCodeText = GameObject.Find("roomCodeDisplay")?.GetComponent<TextMeshProUGUI>();
+    if (roomCodeText != null)
+    {
+        roomCodeText.text = "ESPERANDO OPONENTE...";
+    }
+    
+    // Ocultar o deshabilitar botón EMPEZAR JUEGO
+    var startButton = GameObject.Find("StartGameButton")?.GetComponent<Button>();
+    if (startButton != null)
+    {
+        startButton.interactable = false;
+        startButton.GetComponentInChildren<TextMeshProUGUI>().text = "ESPERANDO...";
+    }
+    
+    Debug.Log("UI actualizada para modo PELEA RÁPIDA");
+}
+    
+
+       
+    // ✅ ACTUALIZADO: Mostrar pantalla Crear Sala (solo para JUGAR CON AMIGOS)
     void ShowCreateRoom()
     {
         Debug.Log("ShowCreateRoom llamado");
@@ -192,6 +295,17 @@ public class AvatarSelector : MonoBehaviour
             joinRoomCanvas.gameObject.SetActive(false);
             avatarSelectionCanvas.gameObject.SetActive(false);
             Debug.Log("CreateRoom activado");
+            
+            // ✅ SOLO crear sala para "JUGAR CON AMIGOS"
+            if (MultiplayerManager.Instance != null)
+            {
+                Debug.Log("Llamando a CreateRoom() para JUGAR CON AMIGOS...");
+                MultiplayerManager.Instance.CreateRoom();
+            }
+            else
+            {
+                Debug.LogError("MultiplayerManager.Instance es NULL!");
+            }
         }
         else
         {
@@ -199,9 +313,12 @@ public class AvatarSelector : MonoBehaviour
         }
     }
     
-    // Mostrar pantalla Unirse a Sala
+    // ❌ DEPRECATED: ShowJoinRoom ya no se usa en nuevo flow
+    // Mantener por compatibilidad pero no debería ejecutarse
     void ShowJoinRoom()
     {
+        Debug.LogWarning("ShowJoinRoom() llamado - DEPRECATED en nuevo flow");
+        
         mainMenuCanvas.gameObject.SetActive(false);
         createRoomCanvas.gameObject.SetActive(false);
         joinRoomCanvas.gameObject.SetActive(true);

@@ -19,7 +19,7 @@
     <RootNamespace></RootNamespace>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-CSharp-firstpass</AssemblyName>
     <TargetFramework>netstandard2.1</TargetFramework>
     <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
@@ -54,7 +54,7 @@
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>2.0.22</UnityProjectGeneratorVersion>
     <UnityProjectGeneratorStyle>SDK</UnityProjectGeneratorStyle>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>GamePlugins:3</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>2022.3.62f1</UnityVersion>
   </PropertyGroup>
@@ -63,91 +63,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.62f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Gameplay\PlayerSpawn.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\PlayAudioClip.cs" />
-    <Compile Include="Assets\Scripts\Core\Simulation.InstanceRegister.cs" />
-    <Compile Include="Assets\Mod Assets\Mod Resources\Scripts\Platformer\PlatformerSpeedPad.cs" />
-    <Compile Include="Assets\Mod Assets\Mod Resources\Scripts\Platformer\Jiggler.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerEnteredVictoryZone.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\AnimationController.cs" />
-    <Compile Include="Assets\Scripts\Core\Simulation.cs" />
-    <Compile Include="Assets\Mod Assets\Mod Resources\Scripts\Platformer\EmitParticlesOnLand.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\PatrolPath.cs" />
-    <Compile Include="Assets\Scripts\UI\MainUIController.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerEnteredDeathZone.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\HealthIsZero.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\PatrolPath.Mover.cs" />
-    <Compile Include="Assets\Scripts\Core\Fuzzy.cs" />
-    <Compile Include="Assets\Scripts\Firebasetest.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\DeathZone.cs" />
-    <Compile Include="Assets\Scripts\Model\PlatformerModel.cs" />
-    <Compile Include="Assets\Scripts\UI\MetaGameController.cs" />
-    <Compile Include="Assets\Scripts\View\ParallaxLayer.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\EnablePlayerInput.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerJumped.cs" />
-    <Compile Include="Assets\Scripts\Core\Simulation.Event.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\EnemyController.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerDeath.cs" />
-    <Compile Include="Assets\Scripts\MenuManager.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\TokenController.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\TokenInstance.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerTokenCollision.cs" />
-    <Compile Include="Assets\Scripts\AvatarSelector.cs" />
-    <Compile Include="Assets\Mod Assets\Mod Resources\Scripts\Platformer\SimpleTrigger.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\VictoryZone.cs" />
-    <Compile Include="Assets\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerEnemyCollision.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\Health.cs" />
-    <Compile Include="Assets\Mod Assets\Mod Resources\Scripts\Backend\TemplateEditorDetection.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\GameController.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerLanded.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\KinematicObject.cs" />
-    <Compile Include="Assets\Mod Assets\Mod Resources\Scripts\Platformer\PlatformerJumpPad.cs" />
-    <Compile Include="Assets\Scripts\View\AnimatedTile.cs" />
-    <Compile Include="Assets\Scripts\Core\HeapQueue.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\SpawnPoint.cs" />
-    <Compile Include="Assets\Scripts\ResultsManager.cs" />
-    <Compile Include="Assets\Scripts\Mechanics\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\EnemyDeath.cs" />
-    <Compile Include="Assets\Scripts\MultiplayerManager.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\PlayerStopJump.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
-    <None Include="Assets\Firebase\Plugins\x86_64\FirebaseCppDatabase.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
-    <None Include="Assets\Firebase\Plugins\Firebase.App.dll" />
-    <None Include="Assets\ThirdPartyNotice.txt" />
-    <None Include="Assets\Firebase\Plugins\x86_64\FirebaseCppAuth.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
-    <None Include="Assets\Firebase\Plugins\Firebase.TaskExtension.dll" />
-    <None Include="Assets\Firebase\m2repository\com\google\firebase\firebase-app-unity\maven-metadata.xml" />
-    <None Include="Assets\Firebase\Plugins\Firebase.Auth.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
-    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
-    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
-    <None Include="Assets\Firebase\Plugins\Firebase.Database.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
-    <None Include="Assets\Firebase\m2repository\com\google\firebase\firebase-auth-unity\maven-metadata.xml" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
-    <None Include="Assets\Firebase\Plugins\iOS\Firebase.Auth.dll" />
-    <None Include="Assets\Mod Assets\Mod Resources\Shaders\SpritesHue.shader" />
-    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-    <None Include="Assets\Firebase\Plugins\x86_64\FirebaseCppApp-12_10_1.dll" />
-    <None Include="Assets\Firebase\Plugins\iOS\Firebase.Database.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
-    <None Include="Assets\Firebase\Plugins\Firebase.Platform.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
-    <None Include="Assets\Firebase\m2repository\com\google\firebase\firebase-database-unity\maven-metadata.xml" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
-    <None Include="Assets\Firebase\Plugins\Google.MiniJson.dll" />
-    <None Include="Assets\PlatformerMicrogame_README.txt" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
-    <None Include="Assets\Firebase\Plugins\iOS\Firebase.App.dll" />
-    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
+    <Compile Include="Assets\Plugins\Android\NewBehaviourScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
