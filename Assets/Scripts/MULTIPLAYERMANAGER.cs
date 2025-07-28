@@ -40,15 +40,38 @@ public class MultiplayerManager : MonoBehaviour
     }
     
     void Start()
+{
+    playerId = "Player_" + System.DateTime.Now.Ticks.ToString().Substring(10);
+    
+    Debug.Log("🎮 MultiplayerManager iniciado");
+    Debug.Log("👤 Player ID: " + playerId);
+    
+    FindRoomCodeDisplay();
+    
+    // ✅ NUEVO FIX: Invoke directo en lugar de coroutine
+    Invoke("InitializeDatabaseWhenReady", 1.0f); // 1 segundo delay
+}
+
+// ✅ NUEVA FUNCIÓN: Simple delayed initialization
+private void InitializeDatabaseWhenReady()
+{
+    try
     {
         database = FirebaseDatabase.DefaultInstance.RootReference;
-        playerId = "Player_" + System.DateTime.Now.Ticks.ToString().Substring(10);
-        
-        Debug.Log("🎮 MultiplayerManager iniciado");
-        Debug.Log("👤 Player ID: " + playerId);
-        
-        FindRoomCodeDisplay();
+        Debug.Log("✅ Database initialized after Firebase ready");
     }
+    catch (System.Exception e)
+    {
+        Debug.LogError("❌ Database initialization failed: " + e.Message);
+        // Retry after 1 second
+        Invoke("InitializeDatabaseWhenReady", 1.0f);
+    }
+}
+
+// ❌ REMOVER la función coroutine anterior:
+// private System.Collections.IEnumerator WaitForFirebaseAndInitialize() - DELETE
+
+        
     
     void Update()
     {
